@@ -42,4 +42,3 @@ src/
 │ ├── Analytics.jsx # Charts and analytics
 │ └── ImportExcel.jsx # Excel file import
 └── index.css # Design tokens and global styles
-

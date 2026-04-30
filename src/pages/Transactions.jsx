@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import * as XLSX from 'xlsx'
 import { useApp } from '../context/AppContext'
 
 const CATEGORIES = ['Trabajo','Extra','Inversiones','Hogar','Comida','Transporte','Salud','Entretenimiento','Personal','Otro']
@@ -31,6 +32,20 @@ export default function Transactions() {
     setShowForm(false)
   }
 
+    const handleExport = () => {
+    const data = filtered.map(tx => ({
+      Descripción: tx.description,
+      Monto: tx.amount,
+      Tipo: tx.type === 'income' ? 'Ingreso' : 'Gasto',
+      Categoría: tx.category,
+      Fecha: tx.date
+    }))
+    const ws = XLSX.utils.json_to_sheet(data)
+    const wb = XLSX.utils.book_new()
+    XLSX.utils.book_append_sheet(wb, ws, 'Transacciones')
+    XLSX.writeFile(wb, `financeOS-transacciones-${new Date().toISOString().split('T')[0]}.xlsx`)
+  }
+
   const inputStyle = {
     padding: '0.5rem 0.75rem', borderRadius: 'var(--radius-md)',
     border: '1px solid var(--color-border)', background: 'var(--color-surface-2)',
@@ -44,10 +59,19 @@ export default function Transactions() {
           <h1 style={{ fontSize: '1.375rem', fontWeight: 700, color: 'var(--color-text)' }}>Transacciones</h1>
           <p style={{ color: 'var(--color-text-muted)', fontSize: '0.875rem' }}>{filtered.length} registros</p>
         </div>
+        
+        <button onClick={handleExport} style={{
+          padding: '0.5625rem 1.125rem', borderRadius: 'var(--radius-lg)',
+          border: '1px solid var(--color-border)', background: 'var(--color-surface)',
+          color: 'var(--color-text-muted)', fontSize: '0.875rem', fontWeight: 600,
+          cursor: 'pointer', transition: 'all var(--transition)'
+        }}>↓ Exportar</button>
+
         <button onClick={() => setShowForm(!showForm)} style={{
           padding: '0.5625rem 1.125rem', borderRadius: 'var(--radius-lg)',
-          border: 'none', background: 'var(--color-primary)', color: '#fff',
-          fontSize: '0.875rem', fontWeight: 600, cursor: 'pointer'
+          border: '1px solid var(--color-border)', background: 'var(--color-surface)',
+          color: 'var(--color-text-muted)', fontSize: '0.875rem', fontWeight: 600,
+          cursor: 'pointer', transition: 'all var(--transition)'
         }}>+ Nueva</button>
       </div>
 

@@ -11,7 +11,7 @@ const CURRENCIES = [
 ]
 
 const SAMPLE_TRANSACTIONS = [
-  { id: 1, description: 'Salario', amount: 18000, type: 'income', category: 'Trabajo', date: '2026-04-01' },
+  { id: 1, description: 'Salario', amount: 13500, type: 'income', category: 'Trabajo', date: '2026-04-01' },
   { id: 2, description: 'Renta', amount: -5500, type: 'expense', category: 'Hogar', date: '2026-04-02' },
   { id: 3, description: 'Supermercado', amount: -1200, type: 'expense', category: 'Comida', date: '2026-04-03' },
   { id: 4, description: 'Netflix', amount: -199, type: 'expense', category: 'Entretenimiento', date: '2026-04-05' },
