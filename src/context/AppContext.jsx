@@ -32,6 +32,7 @@ export function AppProvider({ children }) {
   const [transactions, setTransactions] = useState([])
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState('dashboard')
+  const [sidebarOpen, setSidebarOpen] = useState(false)
   const [selectedMonth, setSelectedMonth] = useState('all')
 
   // Escuchar transacciones en tiempo real desde Firestore
@@ -100,6 +101,7 @@ export function AppProvider({ children }) {
       totalIncome, totalExpenses, balance, savingRate,
       expensesByCategory, MONTHLY_DATA,
       activeTab, setActiveTab,
+      sidebarOpen, setSidebarOpen,
       selectedMonth, setSelectedMonth
     }}>
       {children}
