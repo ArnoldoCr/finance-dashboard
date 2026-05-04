@@ -1,4 +1,8 @@
 import { createContext, useContext, useState, useEffect } from 'react'
+import { db } from '../firebase'
+import {
+  collection, addDoc, deleteDoc, doc, onSnapshot, query, orderBy
+} from 'firebase/firestore'
 
 const AppContext = createContext(null)
 
@@ -8,24 +12,6 @@ const CURRENCIES = [
   { code: 'EUR', symbol: '€', name: 'Euro' },
   { code: 'GBP', symbol: '£', name: 'British Pound' },
   { code: 'CAD', symbol: 'CA$', name: 'Canadian Dollar' },
-]
-
-const SAMPLE_TRANSACTIONS = [
-  { id: 1, description: 'Salario', amount: 13500, type: 'income', category: 'Trabajo', date: '2026-04-01' },
-  { id: 2, description: 'Renta', amount: -5500, type: 'expense', category: 'Hogar', date: '2026-04-02' },
-  { id: 3, description: 'Supermercado', amount: -1200, type: 'expense', category: 'Comida', date: '2026-04-03' },
-  { id: 4, description: 'Netflix', amount: -199, type: 'expense', category: 'Entretenimiento', date: '2026-04-05' },
-  { id: 5, description: 'Freelance', amount: 3500, type: 'income', category: 'Extra', date: '2026-04-07' },
-  { id: 6, description: 'Gasolina', amount: -850, type: 'expense', category: 'Transporte', date: '2026-04-08' },
-  { id: 7, description: 'Restaurante', amount: -450, type: 'expense', category: 'Comida', date: '2026-04-10' },
-  { id: 8, description: 'Gym', amount: -500, type: 'expense', category: 'Salud', date: '2026-04-12' },
-  { id: 9, description: 'Dividendos', amount: 1200, type: 'income', category: 'Inversiones', date: '2026-04-15' },
-  { id: 10, description: 'Luz y agua', amount: -780, type: 'expense', category: 'Hogar', date: '2026-04-16' },
-  { id: 11, description: 'Ropa', amount: -1100, type: 'expense', category: 'Personal', date: '2026-04-18' },
-  { id: 12, description: 'Farmacia', amount: -320, type: 'expense', category: 'Salud', date: '2026-04-20' },
-  { id: 13, description: 'Uber', amount: -180, type: 'expense', category: 'Transporte', date: '2026-04-22' },
-  { id: 14, description: 'Spotify', amount: -99, type: 'expense', category: 'Entretenimiento', date: '2026-04-23' },
-  { id: 15, description: 'Bono proyecto', amount: 2500, type: 'income', category: 'Extra', date: '2026-04-25' },
 ]
 
 const MONTHLY_DATA = [
@@ -39,32 +25,44 @@ const MONTHLY_DATA = [
 ]
 
 export function AppProvider({ children }) {
-  const [theme, setTheme] = useState(() => {
-    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
-  })
+  const [theme, setTheme] = useState(() =>
+    window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+  )
   const [currency, setCurrency] = useState(CURRENCIES[0])
-  const [transactions, setTransactions] = useState(SAMPLE_TRANSACTIONS)
+  const [transactions, setTransactions] = useState([])
+  const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState('dashboard')
   const [selectedMonth, setSelectedMonth] = useState('all')
 
-    useEffect(() => {
+  // Escuchar transacciones en tiempo real desde Firestore
+  useEffect(() => {
+    const q = query(collection(db, 'transactions'), orderBy('date', 'desc'))
+    const unsub = onSnapshot(q, (snapshot) => {
+      const data = snapshot.docs.map(d => ({ id: d.id, ...d.data() }))
+      setTransactions(data)
+      setLoading(false)
+    })
+    return () => unsub()
+  }, [])
+
+  useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme)
     document.documentElement.style.colorScheme = theme
-    }, [theme])
+  }, [theme])
 
-    const toggleTheme = () => setTheme(t => {
-    const next = t === 'dark' ? 'light' : 'dark'
+  const toggleTheme = () => {
+    const next = theme === 'dark' ? 'light' : 'dark'
     document.documentElement.setAttribute('data-theme', next)
     document.documentElement.style.colorScheme = next
-    return next
-    })
-
-  const addTransaction = (tx) => {
-    setTransactions(prev => [{ ...tx, id: Date.now() }, ...prev])
+    setTheme(next)
   }
 
-  const deleteTransaction = (id) => {
-    setTransactions(prev => prev.filter(t => t.id !== id))
+  const addTransaction = async (tx) => {
+    await addDoc(collection(db, 'transactions'), tx)
+  }
+
+  const deleteTransaction = async (id) => {
+    await deleteDoc(doc(db, 'transactions', id))
   }
 
   const formatMoney = (amount) => {
@@ -97,6 +95,7 @@ export function AppProvider({ children }) {
       theme, toggleTheme,
       currency, setCurrency, CURRENCIES,
       transactions, addTransaction, deleteTransaction,
+      loading,
       formatMoney,
       totalIncome, totalExpenses, balance, savingRate,
       expensesByCategory, MONTHLY_DATA,
