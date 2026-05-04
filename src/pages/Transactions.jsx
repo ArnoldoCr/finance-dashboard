@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import * as XLSX from 'xlsx'
 import { useApp } from '../context/AppContext'
 
 const CATEGORIES = ['Trabajo','Extra','Inversiones','Hogar','Comida','Transporte','Salud','Entretenimiento','Personal','Otro']
@@ -33,18 +32,33 @@ export default function Transactions() {
     setShowForm(false)
   }
 
-    const handleExport = () => {
-    const data = filtered.map(tx => ({
-      Descripción: tx.description,
-      Monto: tx.amount,
-      Tipo: tx.type === 'income' ? 'Ingreso' : 'Gasto',
-      Categoría: tx.category,
-      Fecha: tx.date
+  const handleExport = async () => {
+    const ExcelJS = (await import('exceljs')).default
+    const workbook = new ExcelJS.Workbook()
+    const sheet = workbook.addWorksheet('Transacciones')
+
+    sheet.columns = [
+      { header: 'Descripción', key: 'description', width: 25 },
+      { header: 'Monto', key: 'amount', width: 15 },
+      { header: 'Tipo', key: 'type', width: 12 },
+      { header: 'Categoría', key: 'category', width: 18 },
+      { header: 'Fecha', key: 'date', width: 15 },
+    ]
+
+    filtered.forEach(tx => sheet.addRow({
+      description: tx.description,
+      amount: tx.amount,
+      type: tx.type === 'income' ? 'Ingreso' : 'Gasto',
+      category: tx.category,
+      date: tx.date,
     }))
-    const ws = XLSX.utils.json_to_sheet(data)
-    const wb = XLSX.utils.book_new()
-    XLSX.utils.book_append_sheet(wb, ws, 'Transacciones')
-    XLSX.writeFile(wb, `financeOS-transacciones-${new Date().toISOString().split('T')[0]}.xlsx`)
+
+    const buffer = await workbook.xlsx.writeBuffer()
+    const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
+    const a = document.createElement('a')
+    a.href = URL.createObjectURL(blob)
+    a.download = `financeOS-${new Date().toISOString().split('T')[0]}.xlsx`
+    a.click()
   }
 
   const inputStyle = {
