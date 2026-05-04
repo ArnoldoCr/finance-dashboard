@@ -45,6 +45,7 @@ export function AppProvider({ children }) {
   const [currency, setCurrency] = useState(CURRENCIES[0])
   const [transactions, setTransactions] = useState(SAMPLE_TRANSACTIONS)
   const [activeTab, setActiveTab] = useState('dashboard')
+  const [selectedMonth, setSelectedMonth] = useState('all')
 
     useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme)
@@ -75,12 +76,16 @@ export function AppProvider({ children }) {
     return `${currency.symbol}${formatted} ${currency.code}`
   }
 
-  const totalIncome = transactions.filter(t => t.amount > 0).reduce((s, t) => s + t.amount, 0)
-  const totalExpenses = Math.abs(transactions.filter(t => t.amount < 0).reduce((s, t) => s + t.amount, 0))
+  const filteredByMonth = selectedMonth === 'all'
+    ? transactions
+    : transactions.filter(t => t.date.startsWith(selectedMonth))
+
+  const totalIncome = filteredByMonth.filter(t => t.amount > 0).reduce((s, t) => s + t.amount, 0)
+  const totalExpenses = Math.abs(filteredByMonth.filter(t => t.amount < 0).reduce((s, t) => s + t.amount, 0))
   const balance = totalIncome - totalExpenses
   const savingRate = totalIncome > 0 ? Math.round(((totalIncome - totalExpenses) / totalIncome) * 100) : 0
 
-  const expensesByCategory = transactions
+  const expensesByCategory = filteredByMonth
     .filter(t => t.amount < 0)
     .reduce((acc, t) => {
       acc[t.category] = (acc[t.category] || 0) + Math.abs(t.amount)
@@ -95,7 +100,8 @@ export function AppProvider({ children }) {
       formatMoney,
       totalIncome, totalExpenses, balance, savingRate,
       expensesByCategory, MONTHLY_DATA,
-      activeTab, setActiveTab
+      activeTab, setActiveTab,
+      selectedMonth, setSelectedMonth
     }}>
       {children}
     </AppContext.Provider>

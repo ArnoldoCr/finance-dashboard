@@ -5,13 +5,14 @@ import { useApp } from '../context/AppContext'
 const CATEGORIES = ['Trabajo','Extra','Inversiones','Hogar','Comida','Transporte','Salud','Entretenimiento','Personal','Otro']
 
 export default function Transactions() {
-  const { transactions, addTransaction, deleteTransaction, formatMoney } = useApp()
+  const { transactions, addTransaction, deleteTransaction, formatMoney, selectedMonth, setSelectedMonth } = useApp()
   const [filter, setFilter] = useState('all')
   const [search, setSearch] = useState('')
   const [showForm, setShowForm] = useState(false)
   const [form, setForm] = useState({ description: '', amount: '', type: 'expense', category: 'Otro', date: new Date().toISOString().split('T')[0] })
 
   const filtered = transactions.filter(t => {
+    if (selectedMonth !== 'all' && !t.date.startsWith(selectedMonth)) return false
     if (filter === 'income' && t.amount <= 0) return false
     if (filter === 'expense' && t.amount >= 0) return false
     if (search && !t.description.toLowerCase().includes(search.toLowerCase())) return false
@@ -124,8 +125,26 @@ export default function Transactions() {
             transition: 'all var(--transition)'
           }}>{{ all: 'Todos', income: 'Ingresos', expense: 'Gastos' }[f]}</button>
         ))}
-        <input type="search" placeholder="Buscar..." value={search} onChange={e => setSearch(e.target.value)} style={{ marginLeft: 'auto', padding: '0.375rem 0.75rem', borderRadius: 'var(--radius-full)', border: '1px solid var(--color-border)', background: 'var(--color-surface)', color: 'var(--color-text)', fontSize: '0.8125rem', width: '180px' }} />
-      </div>
+<select
+  value={selectedMonth}
+  onChange={e => setSelectedMonth(e.target.value)}
+  style={{
+    padding: '0.375rem 0.75rem', borderRadius: 'var(--radius-full)',
+    border: '1px solid var(--color-border)', background: 'var(--color-surface)',
+    color: 'var(--color-text)', fontSize: '0.8125rem', cursor: 'pointer', fontWeight: 600
+  }}
+>
+  {[
+    { value: 'all', label: 'Todos los meses' },
+    { value: '2026-04', label: 'Abril 2026' },
+    { value: '2026-03', label: 'Marzo 2026' },
+    { value: '2026-02', label: 'Febrero 2026' },
+    { value: '2026-01', label: 'Enero 2026' },
+    { value: '2025-12', label: 'Diciembre 2025' },
+    { value: '2025-11', label: 'Noviembre 2025' },
+    { value: '2025-10', label: 'Octubre 2025' },
+  ].map(m => <option key={m.value} value={m.value}>{m.label}</option>)}
+</select>      </div>
 
       <div style={{ background: 'var(--color-surface)', borderRadius: 'var(--radius-xl)', border: '1px solid var(--color-border)', overflow: 'hidden', boxShadow: 'var(--shadow-sm)' }}>
         {filtered.length === 0 ? (

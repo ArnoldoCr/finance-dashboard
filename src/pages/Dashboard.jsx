@@ -23,6 +23,38 @@ const CustomTooltip = ({ active, payload, label, formatMoney }) => {
   )
 }
 
+const MONTHS = [
+  { value: 'all', label: 'Todos los meses' },
+  { value: '2026-04', label: 'Abril 2026' },
+  { value: '2026-03', label: 'Marzo 2026' },
+  { value: '2026-02', label: 'Febrero 2026' },
+  { value: '2026-01', label: 'Enero 2026' },
+  { value: '2025-12', label: 'Diciembre 2025' },
+  { value: '2025-11', label: 'Noviembre 2025' },
+  { value: '2025-10', label: 'Octubre 2025' },
+]
+
+function MonthSelector() {
+  const { selectedMonth, setSelectedMonth } = useApp()
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginTop: '0.25rem' }}>
+      <span style={{ color: 'var(--color-text-muted)', fontSize: '0.875rem' }}>Mostrando:</span>
+      <select
+        value={selectedMonth}
+        onChange={e => setSelectedMonth(e.target.value)}
+        style={{
+          padding: '0.3125rem 0.75rem', borderRadius: 'var(--radius-full)',
+          border: '1px solid var(--color-border)', background: 'var(--color-surface)',
+          color: 'var(--color-text)', fontSize: '0.8125rem', cursor: 'pointer',
+          fontWeight: 600
+        }}
+      >
+        {MONTHS.map(m => <option key={m.value} value={m.value}>{m.label}</option>)}
+      </select>
+    </div>
+  )
+}
+
 export default function Dashboard() {
   const { totalIncome, totalExpenses, balance, savingRate, formatMoney, expensesByCategory, MONTHLY_DATA, transactions } = useApp()
 
@@ -33,7 +65,7 @@ export default function Dashboard() {
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
       <div>
         <h1 style={{ fontSize: '1.375rem', fontWeight: 700, color: 'var(--color-text)' }}>Dashboard</h1>
-        <p style={{ color: 'var(--color-text-muted)', fontSize: '0.875rem', marginTop: '0.25rem' }}>Resumen financiero — Abril 2026</p>
+        <MonthSelector />
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '1rem' }}>
