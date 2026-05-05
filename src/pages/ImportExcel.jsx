@@ -1,10 +1,12 @@
 import { useState } from 'react'
 import { useApp } from '../context/AppContext'
 import ExcelJS from 'exceljs'
+import { usePageTitle } from '../hooks/usePageTitle'
 
 const CATEGORY_OPTIONS = ['Trabajo', 'Extra', 'Inversiones', 'Hogar', 'Comida', 'Transporte', 'Salud', 'Entretenimiento', 'Personal', 'Otro']
 
 export default function ImportExcel() {
+  usePageTitle('Import')
   const { addTransaction } = useApp()
   const [preview, setPreview] = useState([])
   const [importing, setImporting] = useState(false)

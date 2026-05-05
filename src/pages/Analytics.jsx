@@ -1,9 +1,11 @@
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts'
 import { useApp } from '../context/AppContext'
+import { usePageTitle } from '../hooks/usePageTitle'
 
 const COLORS = ['#6c3fc5','#3b82f6','#22c55e','#f59e0b','#ef4444','#a855f7','#06b6d4']
 
 export default function Analytics() {
+  usePageTitle('Analytics')
   const { expensesByCategory, MONTHLY_DATA, formatMoney, savingRate, totalIncome, totalExpenses } = useApp()
 
   const catData = Object.entries(expensesByCategory)

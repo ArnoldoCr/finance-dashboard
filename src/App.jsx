@@ -6,6 +6,7 @@ import Sidebar from './components/Sidebar'
 
 import Dashboard from './pages/Dashboard'
 import Transactions from './pages/Transactions'
+import Analytics from './pages/Analytics'
 //import Budget from './pages/Budget'
 //import Goals from './pages/Goals'
 import ImportExcel from './pages/ImportExcel'
@@ -39,6 +40,7 @@ export default function App() {
       >
         <Route index element={<Dashboard />} />
         <Route path="transactions" element={<Transactions />} />
+        <Route path="analytics" element={<Analytics/>} />
         {/* <Route path="budget" element={<Budget />} /> */}
         {/* <Route path="goals" element={<Goals />} /> */}
         <Route path="import" element={<ImportExcel />} />

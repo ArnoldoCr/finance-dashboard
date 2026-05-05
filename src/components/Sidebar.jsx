@@ -56,7 +56,7 @@ export default function Sidebar() {
                 <circle cx="24" cy="10" r="2.5" fill="var(--color-primary)"/>
               </svg>
               <div>
-                <div style={{ fontWeight: 700, fontSize: '0.9375rem', color: 'var(--color-text)' }}>FinanceOS</div>
+                <div style={{ fontWeight: 700, fontSize: '0.9375rem', color: 'var(--color-text)' }}>FinanceNOS</div>
                 <div style={{ fontSize: '0.6875rem', color: 'var(--color-text-faint)' }}>Personal</div>
               </div>
             </div>

@@ -1,9 +1,11 @@
 import { useState } from 'react'
 import { useApp } from '../context/AppContext'
+import { usePageTitle } from '../hooks/usePageTitle'
 
 const CATEGORIES = ['Trabajo','Extra','Inversiones','Hogar','Comida','Transporte','Salud','Entretenimiento','Personal','Otro']
 
 export default function Transactions() {
+  usePageTitle('Transactions')
   const { transactions, addTransaction, deleteTransaction, formatMoney, selectedMonth, setSelectedMonth } = useApp()
   const [filter, setFilter] = useState('all')
   const [search, setSearch] = useState('')

@@ -9,10 +9,10 @@ const AppContext = createContext(null)
 
 const CURRENCIES = [
   { code: 'MXN', symbol: '$', name: 'Peso Mexicano' },
-  { code: 'USD', symbol: '$', name: 'US Dollar' },
+  /*{ code: 'USD', symbol: '$', name: 'US Dollar' },
   { code: 'EUR', symbol: '€', name: 'Euro' },
   { code: 'GBP', symbol: '£', name: 'British Pound' },
-  { code: 'CAD', symbol: 'CA$', name: 'Canadian Dollar' },
+  { code: 'CAD', symbol: 'CA$', name: 'Canadian Dollar' },*/
 ]
 
 const MONTHLY_DATA = [

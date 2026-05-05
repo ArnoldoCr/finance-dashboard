@@ -4,6 +4,7 @@ import {
 } from 'recharts'
 import { useApp } from '../context/AppContext'
 import KPICard from '../components/KPICard'
+import { usePageTitle } from '../hooks/usePageTitle'
 
 const COLORS = ['#6c3fc5','#3b82f6','#22c55e','#f59e0b','#ef4444','#a855f7','#06b6d4']
 
@@ -56,6 +57,7 @@ function MonthSelector() {
 }
 
 export default function Dashboard() {
+  usePageTitle('Dashboard')
   const { totalIncome, totalExpenses, balance, savingRate, formatMoney, expensesByCategory, MONTHLY_DATA, transactions } = useApp()
 
   const pieData = Object.entries(expensesByCategory).map(([name, value]) => ({ name, value }))
