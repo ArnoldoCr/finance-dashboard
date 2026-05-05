@@ -1,7 +1,8 @@
 import { createContext, useContext, useState, useEffect } from 'react'
 import { db } from '../firebase'
+import { useAuth } from './AuthContext'
 import {
-  collection, addDoc, deleteDoc, doc, onSnapshot, query, orderBy
+  collection, addDoc, deleteDoc, doc, onSnapshot, query, orderBy, where
 } from 'firebase/firestore'
 
 const AppContext = createContext(null)
@@ -25,6 +26,7 @@ const MONTHLY_DATA = [
 ]
 
 export function AppProvider({ children }) {
+  const { currentUser } = useAuth()
   const [theme, setTheme] = useState(() =>
     window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
   )
@@ -36,15 +38,27 @@ export function AppProvider({ children }) {
   const [selectedMonth, setSelectedMonth] = useState('all')
 
   // Escuchar transacciones en tiempo real desde Firestore
-  useEffect(() => {
-    const q = query(collection(db, 'transactions'), orderBy('date', 'desc'))
-    const unsub = onSnapshot(q, (snapshot) => {
-      const data = snapshot.docs.map(d => ({ id: d.id, ...d.data() }))
-      setTransactions(data)
-      setLoading(false)
-    })
-    return () => unsub()
-  }, [])
+    useEffect(() => {
+      if (!currentUser) {
+        setTransactions([])
+        setLoading(false)
+        return
+      }
+
+      const q = query(
+        collection(db, 'transactions'),
+        where('uid', '==', currentUser.uid),  // 👈 solo las del usuario
+        orderBy('date', 'desc')
+      )
+
+      const unsub = onSnapshot(q, (snapshot) => {
+        const data = snapshot.docs.map(d => ({ id: d.id, ...d.data() }))
+        setTransactions(data)
+        setLoading(false)
+      })
+
+      return () => unsub()
+    }, [currentUser])  // 👈 se re-ejecuta cuando cambia el usuario
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme)
@@ -59,7 +73,10 @@ export function AppProvider({ children }) {
   }
 
   const addTransaction = async (tx) => {
-    await addDoc(collection(db, 'transactions'), tx)
+    await addDoc(collection(db, 'transactions'), {
+      ...tx,
+      uid: currentUser.uid  // 👈 asocia la transacción al usuario
+    })
   }
 
   const deleteTransaction = async (id) => {
