@@ -1,5 +1,6 @@
 @import "tailwindcss";
 
+
 :root, [data-theme="light"] {
   --color-bg:             #eeedf2;
   --color-surface:        #ffffff;
@@ -31,6 +32,7 @@
   --font-body: 'Satoshi', 'Inter', sans-serif;
 }
 
+
 [data-theme="dark"] {
   --color-bg:             #0c0b14;
   --color-surface:        #181622;
@@ -55,6 +57,7 @@
   --shadow-lg: 0 12px 40px rgba(0,0,0,0.6), 0 0 0 1px rgba(160,140,255,0.08);
 }
 
+
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     --color-bg:             #0c0b14;
@@ -75,6 +78,7 @@
     --shadow-lg: 0 12px 40px rgba(0,0,0,0.6);
   }
 }
+
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -99,6 +103,14 @@ body {
 ::-webkit-scrollbar-track { background: var(--color-bg); }
 ::-webkit-scrollbar-thumb { background: var(--color-surface-offset); border-radius: 99px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--color-text-faint); }
+
+
+/* Bottom nav oculto por defecto en desktop */
+.bottom-nav {
+  display: none;
+}
+
+
 /* Mobile responsive */
 @media (max-width: 768px) {
   .sidebar {
@@ -124,5 +136,52 @@ body {
 
   .mobile-topbar {
     display: flex !important;
+  }
+
+  .main-content {
+    padding: 1rem 1rem 5rem 1rem !important;
+  }
+
+  .bottom-nav {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background: var(--color-surface);
+    border-top: 1px solid var(--color-border);
+    z-index: 100;
+    box-shadow: 0 -4px 12px rgba(0,0,0,0.08);
+  }
+
+  .bottom-nav-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.2rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--color-text-muted);
+    transition: color var(--transition);
+    padding: 0.5rem 0;
+  }
+
+  .bottom-nav-item.active {
+    color: var(--color-primary);
+  }
+
+  .bottom-nav-icon {
+    font-size: 1.25rem;
+    line-height: 1;
+  }
+
+  .bottom-nav-label {
+    font-size: 0.625rem;
+    font-weight: 500;
+    letter-spacing: 0.02em;
   }
 }

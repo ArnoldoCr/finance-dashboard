@@ -4,15 +4,22 @@ import { useNavigate } from 'react-router-dom'
 import { Outlet } from 'react-router-dom'
 
 const NAV = [
-  { id: 'dashboard', icon: '▦', label: 'Dashboard' },
+  { id: 'dashboard',    icon: '▦', label: 'Dashboard' },
   { id: 'transactions', icon: '⇄', label: 'Transacciones' },
-  { id: 'analytics', icon: '◈', label: 'Analíticas' },
-  { id: 'import', icon: '⤓', label: 'Importar Excel' },
+  { id: 'analytics',   icon: '◈', label: 'Analíticas' },
+  { id: 'import',      icon: '⤓', label: 'Importar Excel' },
+]
+
+const BOTTOM_NAV = [
+  { id: 'dashboard',    icon: '▦', label: 'Dashboard' },
+  { id: 'transactions', icon: '⇄', label: 'Movimientos' },
+  { id: 'analytics',   icon: '◈', label: 'Analíticas' },
+  { id: 'import',      icon: '⤓', label: 'Importar' },
+  { id: 'menu',        icon: '☰', label: 'Menú' },
 ]
 
 export default function Sidebar() {
   const { activeTab, setActiveTab, theme, toggleTheme, currency, setCurrency, CURRENCIES, sidebarOpen, setSidebarOpen } = useApp()
-
   const { currentUser, logout } = useAuth()
   const navigate = useNavigate()
 
@@ -22,6 +29,10 @@ export default function Sidebar() {
   }
 
   const handleNav = (id) => {
+    if (id === 'menu') {
+      setSidebarOpen(true)
+      return
+    }
     setActiveTab(id)
     setSidebarOpen(false)
     navigate(id === 'dashboard' ? '/' : `/${id}`)
@@ -33,21 +44,28 @@ export default function Sidebar() {
       {sidebarOpen && (
         <div
           onClick={() => setSidebarOpen(false)}
-          style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 40 }}
+          style={{
+            position: 'fixed', inset: 0,
+            background: 'rgba(0,0,0,0.5)',
+            zIndex: 150
+          }}
           className="mobile-overlay"
         />
       )}
 
       <div style={{ display: 'flex', minHeight: '100dvh' }}>
-        <aside style={{
-          width: '220px', minHeight: '100dvh', background: 'var(--color-surface)',
-          borderRight: '1px solid var(--color-border)', display: 'flex',
-          flexDirection: 'column', padding: '1.5rem 0', position: 'sticky',
-          top: 0, boxShadow: 'var(--shadow-sm)', flexShrink: 0, zIndex: 50
-        }}
-        className={`sidebar ${sidebarOpen ? 'sidebar-open' : ''}`}
+
+        {/* ── SIDEBAR ── */}
+        <aside
+          className={`sidebar ${sidebarOpen ? 'sidebar-open' : ''}`}
+          style={{
+            width: '220px', minHeight: '100dvh', background: 'var(--color-surface)',
+            borderRight: '1px solid var(--color-border)', display: 'flex',
+            flexDirection: 'column', padding: '1.5rem 0', position: 'sticky',
+            top: 0, boxShadow: 'var(--shadow-sm)', flexShrink: 0, zIndex: 200
+          }}
         >
-          {/* Logo + close button */}
+          {/* Logo + close */}
           <div style={{ padding: '0 1.25rem 1.5rem', borderBottom: '1px solid var(--color-divider)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem' }}>
               <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
@@ -127,11 +145,27 @@ export default function Sidebar() {
           </div>
         </aside>
 
-        {/* 👇 Aquí se renderizan las páginas */}
-        <main style={{ flex: 1, padding: '2rem', overflowY: 'auto', background: 'var(--color-bg)' }}>
+        {/* ── MAIN ── */}
+        <main className="main-content" style={{
+          flex: 1, padding: '2rem', overflowY: 'auto', background: 'var(--color-bg)'
+        }}>
           <Outlet />
         </main>
       </div>
+
+      {/* ── BOTTOM NAV (mobile) ── */}
+      <nav className="bottom-nav">
+        {BOTTOM_NAV.map(item => (
+          <button
+            key={item.id}
+            onClick={() => handleNav(item.id)}
+            className={`bottom-nav-item ${activeTab === item.id ? 'active' : ''}`}
+          >
+            <span className="bottom-nav-icon">{item.icon}</span>
+            <span className="bottom-nav-label">{item.label}</span>
+          </button>
+        ))}
+      </nav>
     </>
   )
 }
